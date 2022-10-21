@@ -20,3 +20,4 @@
 
         expo init app --template @rneui/template@edge-ts
 # Nepal-Info
+# madhyayuga
