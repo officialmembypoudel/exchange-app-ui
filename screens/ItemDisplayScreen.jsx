@@ -28,10 +28,15 @@ import { defaultFont } from "../fontConfig/defaultFont";
 import { Dimensions, Button } from "react-native";
 import { dummyText } from "../dummyData/exchangeItems";
 import { textTrimmer } from "../helpers/functions";
+import { TouchableWithoutFeedback } from "react-native-gesture-handler";
+import { SearchBarAndroid } from "@rneui/base/dist/SearchBar/SearchBar-android";
 
-const ItemDetailsTab = () => {
+const ItemDetailsTab = ({ setScrollEnabled }) => {
   const style = useTheme();
   const [index, setIndex] = useState(0);
+  const theme = useTheme();
+  const { mode } = useThemeMode();
+  const [query, setQuery] = useState("");
 
   return (
     <>
@@ -108,53 +113,145 @@ const ItemDetailsTab = () => {
         />
       </Tab>
 
-      <TabView
-        value={index}
-        onChange={(e) => setIndex(e)}
-        tabItemContainerStyle={{
-          width: "100%",
-          height: 500,
-          // backgroundColor: "red",
-        }}
-        disableSwipe={false}
-        containerStyle={{
-          backgroundColor: "red",
-          flexGrow: 1,
-          overflow: "scroll",
-          height: 500,
-        }}
-      >
-        <TabView.Item style={{ width: "100%", height: "100%", padding: 8 }}>
-          {/* <NormalDataTextComponent title="Description" /> */}
-          <ScrollView style={{ backgroundColor: "pink" }} scrollEnabled={true}>
-            <Text
-              selectable
-              selectionColor={style.theme.colors.success}
-              style={{ fontFamily: `${defaultFont}_400Regular` }}
-            >
-              {textTrimmer(dummyText, 1800)}
-            </Text>
-          </ScrollView>
-        </TabView.Item>
-        <TabView.Item style={{ width: "100%", height: "100%", padding: 8 }}>
-          <Text
-            selectable
-            selectionColor={style.theme.colors.success}
-            style={{ fontFamily: `${defaultFont}_400Regular` }}
+      <View style={{ backgroundColor: "transparent", height: 400 }}>
+        <TabView
+          value={index}
+          onChange={(e) => setIndex(e)}
+          tabItemContainerStyle={{
+            // width: "100%",
+            height: 400,
+            overflow: "hidden",
+            backgroundColor: "transparent",
+          }}
+          disableSwipe={false}
+          containerStyle={{
+            flexGrow: 1,
+            overflow: "hidden",
+            backgroundColor: "transparent",
+          }}
+        >
+          <TabView.Item style={{ height: "100%" }}>
+            <ScrollView nestedScrollEnabled={true}>
+              <View>
+                <Text
+                  // selectable
+                  selectionColor={style.theme.colors.success}
+                  style={{
+                    fontFamily: `${defaultFont}_400Regular`,
+                    textAlign: "justify",
+                  }}
+                >
+                  {textTrimmer(dummyText, 1800)}
+                </Text>
+              </View>
+            </ScrollView>
+          </TabView.Item>
+          <TabView.Item
+            style={{
+              overflow: "hidden",
+              backgroundColor: "transparent",
+              height: "100%",
+              justifyContent: "space-between",
+            }}
           >
-            {textTrimmer(dummyText, 1200)}
-          </Text>
-        </TabView.Item>
-        <TabView.Item style={{ width: "100%", height: "100%", padding: 8 }}>
-          <Text
-            selectable
-            selectionColor={style.theme.colors.success}
-            style={{ fontFamily: `${defaultFont}_400Regular` }}
+            <View>
+              <ScrollView
+                showsVerticalScrollIndicator={false}
+                style={{ height: 320 }}
+                nestedScrollEnabled={true}
+              >
+                <Text
+                  style={{
+                    fontFamily: `${defaultFont}_400Regular`,
+                    textAlign: "justify",
+                  }}
+                >
+                  {textTrimmer(dummyText, 1800)}
+                </Text>
+              </ScrollView>
+              <View style={{ width: "100%" }}>
+                <SearchBarAndroid
+                  value={query}
+                  containerStyle={{
+                    backgroundColor: "rgba(0,0,0,0)",
+                    width: "100%",
+                    padding: 0,
+                    height: 67,
+                    borderColor: "rgba(0,0,0,0)",
+
+                    // marginVertical: 5,
+                  }}
+                  inputContainerStyle={{
+                    backgroundColor: "rgba(0,0,0,0)",
+                    borderRadius: 10,
+                    borderWidth: 2,
+                    borderColor: theme.theme.colors.black,
+                    height: 50,
+                    width: "100%",
+                    borderBottomWidth: 2,
+                  }}
+                  searchIcon={
+                    <Icon
+                      name="comment"
+                      color={mode === "dark" ? theme.theme.colors.grey0 : null}
+                    />
+                  }
+                  cancelIcon={
+                    <Icon
+                      name="arrow-back"
+                      type="ionIcons"
+                      color={mode === "dark" ? theme.theme.colors.grey0 : null}
+                      onPress={() => Keyboard.dismiss()}
+                      // reverseColor
+                      containerStyle={{ borderRadius: 30 }}
+                    />
+                  }
+                  clearIcon={
+                    <Icon
+                      name="send"
+                      color={mode === "dark" ? theme.theme.colors.grey0 : null}
+                      onPress={() => setQuery("")}
+                      // reverseColor
+                      containerStyle={{ borderRadius: 30 }}
+                    />
+                  }
+                  inputStyle={{
+                    color: theme.theme.colors.grey0,
+                    fontFamily: `${defaultFont}_500Medium`,
+                  }}
+                  onChangeText={(input) => setQuery(input)}
+                  onClear={() => setQuery("")}
+                  placeholder="add a question"
+                  selectionColor={theme.theme.colors.primary}
+                />
+              </View>
+            </View>
+          </TabView.Item>
+          <TabView.Item
+            style={{
+              height: "100%",
+              overflow: "hidden",
+              backgroundColor: "transparent",
+            }}
           >
-            {textTrimmer(dummyText, 1200)}
-          </Text>
-        </TabView.Item>
-      </TabView>
+            <ScrollView nestedScrollEnabled={true}>
+              <View>
+                <Text
+                  // selectable
+                  selectionColor={style.theme.colors.success}
+                  style={{
+                    fontFamily: `${defaultFont}_400Regular`,
+                    textAlign: "justify",
+                  }}
+                >
+                  {textTrimmer(dummyText, 1800)}
+                </Text>
+              </View>
+            </ScrollView>
+          </TabView.Item>
+        </TabView>
+      </View>
+      {/* </ScrollView> */}
     </>
   );
 };
@@ -211,6 +308,9 @@ const ItemDisplayScreen = ({ route }) => {
   const { mode, setMode } = useThemeMode();
   const { item } = route.params;
   const screenWidth = Dimensions.get("window").width;
+  const [scrollEnabled, setScrollEnabled] = useState(true);
+
+  console.log(scrollEnabled);
 
   return (
     <View
@@ -219,13 +319,15 @@ const ItemDisplayScreen = ({ route }) => {
         backgroundColor: style.theme.colors.background,
       }}
     >
-      <ScreenHeaderComponent title={item.name} hideModeToggle={true} />
       <ScrollView
-        overScrollMode="never"
-        contentContainerStyle={{ paddingBottom: 100 }}
+        // overScrollMode="never"
+        contentContainerStyle={{ paddingBottom: 100, padding: 2 }}
         style={{ width: "100%", flex: 1 }}
-        nestedScrollEnabled={true}
+        // nestedScrollEnabled={true}
+        scrollEnabled={true}
+        showsVerticalScrollIndicator={false}
       >
+        <ScreenHeaderComponent title={item.name} hideModeToggle={true} />
         <Card
           containerStyle={{
             width: "100%",
@@ -336,7 +438,7 @@ const ItemDisplayScreen = ({ route }) => {
           </View>
         </StyledCard>
         <StyledCard>
-          <ItemDetailsTab />
+          <ItemDetailsTab setScrollEnabled={setScrollEnabled} />
           {/* </View> */}
         </StyledCard>
       </ScrollView>

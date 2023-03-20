@@ -1,5 +1,5 @@
 import { StyleSheet, TouchableOpacity, View, Image } from "react-native";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { containerStyles } from "../helpers/objects";
 import {
   makeStyles,
@@ -9,68 +9,295 @@ import {
   useTheme,
   SearchBar,
   Icon,
+  Input,
 } from "@rneui/themed";
 import { useNavigation } from "@react-navigation/native";
 import ScreenHeaderComponent from "../components/ScreenHeaderComponent";
 import noInternetImg from "../assets/please-login.png";
+import { defaultFont } from "../fontConfig/defaultFont";
+import { ScrollView } from "react-native-gesture-handler";
+import homeIcon from "../assets/madhyaYugTransparent.png";
+import { account, databases } from "../configs/appwrite";
+import { ID } from "appwrite";
+import { AuthContext } from "../context/authContext";
+
+const defaultUserValue = {
+  name: "",
+  email: "",
+  password: "",
+  cPassword: "",
+  phone: "",
+};
 
 const RegisterScreen = () => {
   const style = useTheme();
+  const { setUser, setIsSignedIn } = useContext(AuthContext);
+  const { theme } = useTheme();
   const navigation = useNavigation();
   const [isDark, setIsDark] = useState(false);
   const { mode, setMode } = useThemeMode();
+  const [newUser, SetNewUser] = useState(defaultUserValue);
+
+  const handleRegister = () => {
+    const promise = account.create(
+      ID.unique(),
+      newUser.email,
+      newUser.password,
+      newUser.name
+    );
+
+    promise.then(
+      function (response) {
+        const addUserToDatabase = databases.createDocument(
+          "madhyayuga",
+          "userInfo",
+          response.$id,
+          {
+            name: newUser.name,
+            phone: newUser.phone,
+            email: newUser.email,
+          }
+        );
+
+        addUserToDatabase.then(
+          function (addedUser) {
+            const loginUser = account.createEmailSession(
+              newUser.email,
+              newUser.password
+            );
+
+            loginUser.then(
+              function (res) {
+                setUser(addedUser);
+                setIsSignedIn(true);
+                SetNewUser(defaultUserValue);
+              },
+              function (err) {
+                setUser({});
+                setIsSignedIn(false);
+                console.log("Login Error", err);
+              }
+            );
+          },
+          function (addUserError) {
+            setUser({});
+            console.log("Error while adding user", addUserError);
+          }
+        );
+      },
+      function (error) {
+        setUser({});
+        console.log("Login Error", err);
+      }
+    );
+  };
 
   return (
     <View
       style={{
         ...containerStyles,
         backgroundColor: style.theme.colors.background,
+        justifyContent: "space-around",
       }}
     >
-      <ScreenHeaderComponent title="Register" />
-      <Image
-        source={noInternetImg}
-        style={{
-          width: 334,
-          height: 330,
-          alignSelf: "center",
-          marginTop: 100,
-          resizeMode: "contain",
-        }}
-      />
-      <View
-        style={{ alignSelf: "center", marginTop: "auto", marginBottom: 50 }}
+      {/* <ScreenHeaderComponent title="Login" /> */}
+      <ScrollView
+        style={{ width: "100%", flex: 1 }}
+        contentContainerStyle={{ justifyContent: "center", flex: 1 }}
       >
-        {/* <Button
-          title={"Please Login To continue"}
-          titleStyle={{ color: style.theme.colors.black }}
-          type="outline"
-          radius={10}
-          style={{ alignSelf: "center" }}
-          buttonStyle={{
-            borderColor: style.theme.colors.black,
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            marginBottom: 25,
+            justifyContent: "center",
           }}
-          containerStyle={{}}
-          icon={<Icon name="chevron-forward" type="ionicon" />}
-          iconPosition="right"
-          onPress={() => {
-            navigation.navigate("Profile");
-            console.log("navigate to login screen");
-          }}
-        /> */}
-      </View>
-
-      {/* </Button> */}
-      {/* <Text
-        h3
-        style={{
-          textAlign: "center",
-          alignSelf: "center",
-          color: style.theme.colors.warning,
-        }}
-      >
-        Network Problem!
-      </Text> */}
+        >
+          <View
+            style={{
+              backgroundColor: "#f0f0f0",
+              alignSelf: "flex-start",
+              padding: 4,
+              borderRadius: 25,
+              elevation: 2,
+              margin: 1,
+            }}
+          >
+            <Image
+              source={homeIcon}
+              style={{
+                height: 40,
+                resizeMode: "contain",
+                width: 40,
+              }}
+            />
+          </View>
+          <Text
+            h3
+            h3Style={{
+              // color: "#dc3545",
+              fontFamily: `${defaultFont}_700Bold`,
+              fontWeight: "600",
+              fontSize: 35,
+              marginLeft: 10,
+            }}
+          >
+            Madhyayuga
+          </Text>
+        </View>
+        <View style={{ marginVertical: 20 }}>
+          <Text
+            h3
+            h3Style={{
+              color: "#dc3545",
+              fontFamily: `${defaultFont}_700Bold`,
+              fontWeight: "600",
+            }}
+          >
+            Hey,
+          </Text>
+          <Text
+            h3
+            h3Style={{
+              fontFamily: `${defaultFont}_700Bold`,
+              fontWeight: "600",
+            }}
+          >
+            Register Now.
+          </Text>
+        </View>
+        <View style={{ width: "100%", alignSelf: "center" }}>
+          <Input
+            value={newUser.name}
+            onChangeText={(value) => SetNewUser({ ...newUser, name: value })}
+            inputContainerStyle={{
+              borderWidth: 2,
+              borderRadius: 5,
+              borderBottomWidth: 2,
+              paddingHorizontal: 5,
+              borderColor: theme.colors.grey4,
+              backgroundColor: theme.colors.grey4,
+            }}
+            leftIcon={<Icon name="person" type="octicons" />}
+            // errorMessage="Fuck@nigga.com"
+            placeholder="full name"
+            // keyboardType="name-phone-pad"
+            containerStyle={{ paddingHorizontal: 0, marginBottom: 5 }}
+            inputStyle={{ fontFamily: `${defaultFont}_400Regular` }}
+          />
+          <Input
+            value={newUser.email}
+            onChangeText={(value) => SetNewUser({ ...newUser, email: value })}
+            inputContainerStyle={{
+              borderWidth: 2,
+              borderRadius: 5,
+              borderBottomWidth: 2,
+              paddingHorizontal: 5,
+              borderColor: theme.colors.grey4,
+              backgroundColor: theme.colors.grey4,
+            }}
+            leftIcon={<Icon name="mail" type="feather" />}
+            // errorMessage="Fuck@nigga.com"
+            placeholder="email"
+            keyboardType="email-address"
+            containerStyle={{ paddingHorizontal: 0, marginBottom: 5 }}
+            inputStyle={{ fontFamily: `${defaultFont}_400Regular` }}
+          />
+          <Input
+            value={newUser.phone}
+            onChangeText={(value) => SetNewUser({ ...newUser, phone: value })}
+            inputContainerStyle={{
+              borderWidth: 2,
+              borderRadius: 5,
+              borderBottomWidth: 2,
+              paddingHorizontal: 5,
+              borderColor: theme.colors.grey4,
+              backgroundColor: theme.colors.grey4,
+            }}
+            leftIcon={<Icon name="phone" type="feather" />}
+            // errorMessage="Fuck@nigga.com"
+            placeholder="phone"
+            keyboardType="phone-pad"
+            containerStyle={{ paddingHorizontal: 0, marginBottom: 5 }}
+            inputStyle={{ fontFamily: `${defaultFont}_400Regular` }}
+          />
+          <Input
+            value={newUser.password}
+            onChangeText={(value) =>
+              SetNewUser({ ...newUser, password: value })
+            }
+            inputContainerStyle={{
+              borderWidth: 2,
+              borderRadius: 5,
+              borderBottomWidth: 2,
+              borderColor: theme.colors.grey4,
+              backgroundColor: theme.colors.grey4,
+              paddingHorizontal: 5,
+            }}
+            leftIcon={<Icon name="lock" type="feather" />}
+            placeholder="password"
+            // errorMessage="incorrect password"
+            containerStyle={{ paddingHorizontal: 0 }}
+            inputStyle={{ fontFamily: `${defaultFont}_400Regular` }}
+            secureTextEntry={true}
+          />
+          <Input
+            value={newUser.cPassword}
+            onChangeText={(value) =>
+              SetNewUser({ ...newUser, cPassword: value })
+            }
+            inputContainerStyle={{
+              borderWidth: 2,
+              borderRadius: 5,
+              borderBottomWidth: 2,
+              borderColor: theme.colors.grey4,
+              backgroundColor: theme.colors.grey4,
+              paddingHorizontal: 5,
+            }}
+            leftIcon={<Icon name="lock" type="feather" />}
+            placeholder="confirm password"
+            // errorMessage="incorrect password"
+            containerStyle={{ paddingHorizontal: 0 }}
+            inputStyle={{ fontFamily: `${defaultFont}_400Regular` }}
+            secureTextEntry={true}
+          />
+          <Button
+            title="Register"
+            titleStyle={{
+              fontFamily: `${defaultFont}_500Medium`,
+            }}
+            containerStyle={{
+              borderRadius: 5,
+              marginVertical: 20,
+            }}
+            buttonStyle={{ paddingVertical: 13 }}
+            onPress={handleRegister}
+            color="success"
+          />
+        </View>
+        <View style={{ alignSelf: "center", marginBottom: 50 }}>
+          <Button
+            title={"Have an Account? Login Now."}
+            titleStyle={{
+              color: style.theme.colors.black,
+              fontFamily: `${defaultFont}_500Medium`,
+            }}
+            type="clear"
+            radius={10}
+            style={{ alignSelf: "center" }}
+            buttonStyle={{
+              borderColor: style.theme.colors.black,
+            }}
+            containerStyle={{}}
+            icon={<Icon name="chevron-back" type="ionicon" size={18} />}
+            iconPosition="left"
+            onPress={() => {
+              navigation.navigate("Login");
+              console.log("navigate to Register screen");
+            }}
+          />
+        </View>
+      </ScrollView>
     </View>
   );
 };

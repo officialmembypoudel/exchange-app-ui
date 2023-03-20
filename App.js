@@ -2,7 +2,6 @@ import React from "react";
 // import { createTheme, lightColors, ThemeProvider, useTheme } from "@rneui/themed";
 // import { lightColors } from "@rneui/base";
 import { StatusBar } from "expo-status-bar";
-import StackNavigator from "./navigator/StackNavigator";
 import { NavigationContainer } from "@react-navigation/native";
 import {
   useFonts,
@@ -24,7 +23,7 @@ import {
   Montserrat_800ExtraBold_Italic,
   Montserrat_900Black,
   Montserrat_900Black_Italic,
-} from '@expo-google-fonts/montserrat';
+} from "@expo-google-fonts/montserrat";
 import { Text, View } from "react-native";
 import { containerStyles } from "./helpers/objects";
 import {
@@ -45,10 +44,9 @@ import {
   Poppins_800ExtraBold,
   Poppins_800ExtraBold_Italic,
   Poppins_900Black,
-  Poppins_900Black_Italic
-} from '@expo-google-fonts/poppins'
+  Poppins_900Black_Italic,
+} from "@expo-google-fonts/poppins";
 import {
-
   OpenSans_300Light,
   OpenSans_300Light_Italic,
   OpenSans_400Regular,
@@ -61,23 +59,26 @@ import {
   OpenSans_700Bold_Italic,
   OpenSans_800ExtraBold,
   OpenSans_800ExtraBold_Italic,
-} from '@expo-google-fonts/open-sans'
-import { Button, createTheme, lightColors, ThemeConsumer, ThemeProvider, useTheme } from "@rneui/themed";
-
-
-
+} from "@expo-google-fonts/open-sans";
+import {
+  Button,
+  createTheme,
+  lightColors,
+  ThemeConsumer,
+  ThemeProvider,
+  useTheme,
+} from "@rneui/themed";
+import AuthProvider from "./context/authContext";
+import { Router } from "./navigator/StackNavigator";
 
 const theme = createTheme({
-
-
   lightColors: {
-    background: 'rgb(245, 241, 237)',
-    white: lightColors.disabled,
+    background: "#f0f0f0",
+    white: "#f0f0f0",
   },
   darkColors: {
-    background: '#343a40',
+    background: "#343a40",
   },
-
 });
 
 export default function App() {
@@ -120,7 +121,6 @@ export default function App() {
     Poppins_900Black,
     Poppins_900Black_Italic,
 
-
     OpenSans_300Light,
     OpenSans_300Light_Italic,
     OpenSans_400Regular,
@@ -133,20 +133,30 @@ export default function App() {
     OpenSans_700Bold_Italic,
     OpenSans_800ExtraBold,
     OpenSans_800ExtraBold_Italic,
-  })
+  });
   if (!fontsLoaded) {
     return (
-      <View style={{ ...containerStyles, backgroundColor: 'rgb(245, 241, 237)', width: '100%', justifyContent: 'center', alignItems: 'center' }}>
-        <Button title={''} loading type="clear" />
+      <View
+        style={{
+          ...containerStyles,
+          backgroundColor: "rgb(245, 241, 237)",
+          width: "100%",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Button title={""} loading type="clear" />
       </View>
-    )
+    );
   } else {
     return (
       <ThemeProvider theme={theme}>
         <StatusBar style="auto" />
-        <NavigationContainer>
-          <StackNavigator />
-        </NavigationContainer>
+        <AuthProvider>
+          <NavigationContainer>
+            <Router />
+          </NavigationContainer>
+        </AuthProvider>
       </ThemeProvider>
     );
   }

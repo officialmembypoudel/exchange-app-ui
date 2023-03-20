@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   FlatList,
   ScrollView,
@@ -24,6 +24,7 @@ import ModeToogleComponent from "./ModeToogleComponent";
 import { defaultFont } from "../fontConfig/defaultFont";
 import { exchangeItems, newExchangeItems } from "../dummyData/exchangeItems";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { AuthContext } from "../context/authContext";
 
 const sections = [
   {
@@ -66,6 +67,7 @@ const SectionTitle = ({ title }) => {
 };
 
 const HomeComponent = () => {
+  const { user } = useContext(AuthContext);
   const styles = useStyles();
   const theme = useTheme();
   const { setMode, mode } = useThemeMode();
@@ -108,7 +110,7 @@ const HomeComponent = () => {
               fontWeight: "600",
             }}
           >
-            Welcome, Memby!
+            {`Welcome, ${user.name}`}
           </Text>
         </View>
         <ModeToogleComponent />
