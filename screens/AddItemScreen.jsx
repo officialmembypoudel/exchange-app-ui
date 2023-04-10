@@ -1,4 +1,10 @@
-import { StyleSheet, TouchableOpacity, View, Image } from "react-native";
+import {
+  StyleSheet,
+  TouchableOpacity,
+  View,
+  Image,
+  ScrollView,
+} from "react-native";
 import React, { useState } from "react";
 import { containerStyles } from "../helpers/objects";
 import {
@@ -9,6 +15,7 @@ import {
   useTheme,
   SearchBar,
   Icon,
+  Input,
 } from "@rneui/themed";
 import { useNavigation } from "@react-navigation/native";
 import ScreenHeaderComponent from "../components/ScreenHeaderComponent";
@@ -17,6 +24,7 @@ import { defaultFont } from "../fontConfig/defaultFont";
 
 const AddItemScreen = () => {
   const style = useTheme();
+  const { theme } = useTheme();
   const navigation = useNavigation();
   const [isDark, setIsDark] = useState(false);
   const { mode, setMode } = useThemeMode();
@@ -29,52 +37,62 @@ const AddItemScreen = () => {
       }}
     >
       <ScreenHeaderComponent title="List Your Item" />
-      <Image
-        source={noInternetImg}
-        style={{
-          width: 334,
-          height: 330,
-          alignSelf: "center",
-          marginTop: 100,
-          resizeMode: "contain",
-        }}
-      />
-      <View
-        style={{ alignSelf: "center", marginTop: "auto", marginBottom: 50 }}
-      >
-        <Button
-          title={"Please Login To continue"}
-          titleStyle={{
-            color: style.theme.colors.black,
-            fontFamily: `${defaultFont}_500Medium`,
+      <ScrollView style={{ width: "100%" }}>
+        <Input
+          // value={email}
+          // onChangeText={(email) => setEmail(email)}
+          inputContainerStyle={{
+            borderWidth: 2,
+            borderRadius: 5,
+            borderBottomWidth: 2,
+            paddingHorizontal: 5,
+            borderColor: theme.colors.grey4,
+            backgroundColor: theme.colors.grey4,
           }}
-          type="outline"
-          radius={10}
-          style={{ alignSelf: "center" }}
-          buttonStyle={{
-            borderColor: style.theme.colors.black,
-          }}
-          containerStyle={{}}
-          icon={<Icon name="chevron-forward" type="ionicon" />}
-          iconPosition="right"
-          onPress={() => {
-            navigation.navigate("Login");
-            console.log("navigate to login screen");
-          }}
+          // leftIcon={<Icon name="mail" type="feather" />}
+          // errorMessage="Fuck@nigga.com"
+          placeholder="name"
+          // keyboardType="email-address"
+          containerStyle={{ paddingHorizontal: 0, marginBottom: 5 }}
+          inputStyle={{ fontFamily: `${defaultFont}_400Regular` }}
         />
-      </View>
-
-      {/* </Button> */}
-      {/* <Text
-        h3
-        style={{
-          textAlign: "center",
-          alignSelf: "center",
-          color: style.theme.colors.warning,
-        }}
-      >
-        Network Problem!
-      </Text> */}
+        <Input
+          // value={email}
+          // onChangeText={(email) => setEmail(email)}
+          inputContainerStyle={{
+            borderWidth: 2,
+            borderRadius: 5,
+            borderBottomWidth: 2,
+            paddingHorizontal: 5,
+            borderColor: theme.colors.grey4,
+            backgroundColor: theme.colors.grey4,
+          }}
+          // leftIcon={<Icon name="mail" type="feather" />}
+          // errorMessage="Fuck@nigga.com"
+          placeholder="description"
+          // keyboardType="email-address"
+          containerStyle={{ paddingHorizontal: 0, marginBottom: 5 }}
+          inputStyle={{ fontFamily: `${defaultFont}_400Regular` }}
+        />
+        <Input
+          // value={email}
+          // onChangeText={(email) => setEmail(email)}
+          inputContainerStyle={{
+            borderWidth: 2,
+            borderRadius: 5,
+            borderBottomWidth: 2,
+            paddingHorizontal: 5,
+            borderColor: theme.colors.grey4,
+            backgroundColor: theme.colors.grey4,
+          }}
+          // leftIcon={<Icon name="mail" type="feather" />}
+          // errorMessage="Fuck@nigga.com"
+          placeholder="for"
+          // keyboardType="email-address"
+          containerStyle={{ paddingHorizontal: 0, marginBottom: 5 }}
+          inputStyle={{ fontFamily: `${defaultFont}_400Regular` }}
+        />
+      </ScrollView>
     </View>
   );
 };
