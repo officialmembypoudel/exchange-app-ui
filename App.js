@@ -71,6 +71,30 @@ import {
 import AuthProvider from "./context/authContext";
 import { Router } from "./navigator/StackNavigator";
 
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+import { getAuth } from "firebase/auth";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyBe7xWNJqVI7gDJy14Z6XZNuv4YHsqCbxk",
+  authDomain: "madhyayuga.firebaseapp.com",
+  projectId: "madhyayuga",
+  storageBucket: "madhyayuga.appspot.com",
+  messagingSenderId: "834075478944",
+  appId: "1:834075478944:web:4db2d0810997c2075532c5",
+  measurementId: "G-9GVXDF05PS"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+const auth = getAuth(app);
+
 const theme = createTheme({
   lightColors: {
     background: "#f0f0f0",

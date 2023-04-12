@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "834075478944",
+    "project_id": "madhyayuga",
+    "storage_bucket": "madhyayuga.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:834075478944:android:dbf3aa84ebda40db5532c5",
+        "android_client_info": {
+          "package_name": "com.officialmemby.madhyayuga"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "834075478944-70eu8e0tu24tfo2s4qarvnru32h7fn8e.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDv8w-CFyDgEMz7_5QcEZo0pJhcnU5hQcU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "834075478944-70eu8e0tu24tfo2s4qarvnru32h7fn8e.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
