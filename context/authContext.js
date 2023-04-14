@@ -38,10 +38,20 @@ const AuthProvider = ({ children }) => {
 
     promise.then(
       function (response) {
-        setUser(response);
-        setIsSignedIn(true);
-        // navigate("Login");
-        console.log("fuck");
+        const promise = account.get();
+
+        promise.then(
+          function (response) {
+            setUser(response);
+            setLoading(false);
+            setIsSignedIn(true);
+          },
+          function (error) {
+            console.log(error);
+            setLoading(false);
+            setIsSignedIn(false);
+          }
+        );
       },
       function (error) {
         setIsSignedIn(false);

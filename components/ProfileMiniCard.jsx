@@ -1,5 +1,5 @@
 import { StyleSheet, View } from "react-native";
-import React from "react";
+import React, { useContext } from "react";
 import {
   makeStyles,
   Text,
@@ -16,17 +16,19 @@ import {
 } from "@rneui/themed";
 import profileImg from "../assets/profile.png";
 import { defaultFont } from "../fontConfig/defaultFont";
+import { AuthContext } from "../context/authContext";
 
 const array = [1, 2, 3, 4, 5];
 
 const ProfileMiniCard = ({ rating }) => {
   const style = useTheme();
   const { mode, setMode } = useThemeMode();
+  const { user } = useContext(AuthContext);
   return (
     <View>
       <Avatar
         size={"xlarge"}
-        source={profileImg}
+        title="PIC"
         rounded
         containerStyle={{
           borderRadius: 10,
@@ -61,7 +63,7 @@ const ProfileMiniCard = ({ rating }) => {
           // fontWeight: "700",
         }}
       >
-        Memby Poudel
+        {user.name}
       </Text>
       <View
         style={{

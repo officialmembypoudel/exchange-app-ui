@@ -1,11 +1,12 @@
 import { configureStore } from "@reduxjs/toolkit";
+import listings from "./listings";
 
 export const store = configureStore({
-    reducer:{
-
-    },
-    middleware: getDefaultMiddleware =>
+  reducer: {
+    listings,
+  },
+  middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
-      serializableCheck: false
-    })
-})
+      serializableCheck: false,
+    }),
+});

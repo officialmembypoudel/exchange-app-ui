@@ -31,31 +31,37 @@ const ProfileScreen = () => {
   };
 
   return (
-    <ScrollView contentContainerStyle={{ paddingBottom: 50 }}>
-      <View
-        style={{
-          ...containerStyles,
-          backgroundColor:
-            mode === "light" ? "#ffff" : style.theme.colors.background,
-        }}
+    <View
+      style={{
+        backgroundColor:
+          mode === "light" ? "#ffff" : style.theme.colors.background,
+        // height: "100%",
+        flex: 1,
+        paddingHorizontal: 8,
+        paddingTop: 55,
+      }}
+    >
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={{ paddingBottom: 50 }}
       >
         <ScreenHeaderComponent
           title="Profile"
           hideModeToggle={false}
-          iconButton={
-            <Icon
-              name="settings"
-              type="anddesign"
-              onPress={onSettingsPress}
-              iconStyle={{
-                backgroundColor: style.theme.colors.grey5,
-                borderRadius: 14,
-                padding: 1,
-                // elevation: 100,
-              }}
-              // raised
-            />
-          }
+          // iconButton={
+          //   <Icon
+          //     name="settings"
+          //     type="anddesign"
+          //     onPress={onSettingsPress}
+          //     iconStyle={{
+          //       backgroundColor: style.theme.colors.grey5,
+          //       borderRadius: 14,
+          //       padding: 1,
+          //       // elevation: 100,
+          //     }}
+          //     // raised
+          //   />
+          // }
         />
         <View style={{ width: "100%", marginBottom: 30 }}>
           <ProfileMiniCard rating={4} />
@@ -73,14 +79,15 @@ const ProfileScreen = () => {
           icon="format-list-bulleted-square"
           iconType="material-community"
           title="My Listings"
+          onPress={() => navigation.navigate("myListings")}
         />
-        <ProfileItemsCards
+        {/* <ProfileItemsCards
           iconBackgroundColor={style.theme.colors.warning}
           iconColor={style.theme.colors.disabled}
           title="Saved Listings"
           icon="bookmark-box-multiple"
           iconType="material-community"
-        />
+        /> */}
         <ProfileItemsCards
           iconBackgroundColor={style.theme.colors.error}
           iconColor={style.theme.colors.disabled}
@@ -107,8 +114,8 @@ const ProfileScreen = () => {
           }}
           color="error"
         />
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 };
 

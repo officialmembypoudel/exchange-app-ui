@@ -75,6 +75,8 @@ import { Router } from "./navigator/StackNavigator";
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getAuth } from "firebase/auth";
+import { Provider } from "react-redux";
+import { store } from "./store";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -87,7 +89,7 @@ const firebaseConfig = {
   storageBucket: "madhyayuga.appspot.com",
   messagingSenderId: "834075478944",
   appId: "1:834075478944:web:4db2d0810997c2075532c5",
-  measurementId: "G-9GVXDF05PS"
+  measurementId: "G-9GVXDF05PS",
 };
 
 // Initialize Firebase
@@ -175,12 +177,14 @@ export default function App() {
   } else {
     return (
       <ThemeProvider theme={theme}>
-        <StatusBar style="auto" />
-        <AuthProvider>
-          <NavigationContainer>
-            <Router />
-          </NavigationContainer>
-        </AuthProvider>
+        <Provider store={store}>
+          <StatusBar style="auto" />
+          <AuthProvider>
+            <NavigationContainer>
+              <Router />
+            </NavigationContainer>
+          </AuthProvider>
+        </Provider>
       </ThemeProvider>
     );
   }

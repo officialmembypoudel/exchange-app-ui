@@ -5,7 +5,7 @@ import {
   Image,
   ScrollView,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import * as ImagePicker from "expo-image-picker";
 import { containerStyles } from "../helpers/objects";
 import {
@@ -25,52 +25,93 @@ import noInternetImg from "../assets/please-login.png";
 import selectImgDum from "../assets/selectImg.png";
 import { defaultFont } from "../fontConfig/defaultFont";
 import { databases, storage } from "../configs/appwrite";
+import { ID } from "appwrite";
+import { AuthContext } from "../context/authContext";
+import { useDispatch } from "react-redux";
+import { fetchAllListings, userListings } from "../store/listings";
+
+const defaultInputs = {
+  name: "",
+  for: "",
+  description: "",
+  condition: "",
+  location: "",
+};
 
 const AddItemScreen = () => {
+  const dispatch = useDispatch();
   const style = useTheme();
   const { theme } = useTheme();
   const navigation = useNavigation();
+  const { user } = useContext(AuthContext);
+
   const [isDark, setIsDark] = useState(false);
   const [selectedImg, setSelectedImg] = useState(null);
   const { mode, setMode } = useThemeMode();
+  const [newListing, setNewListing] = useState(defaultInputs);
+  const [loading, setLoading] = useState(false);
 
-  const pickImage = async () => {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
+  // const pickImage = async () => {
+  //   const result = await ImagePicker.launchImageLibraryAsync({
+  //     mediaTypes: ImagePicker.MediaTypeOptions.Images,
+  //     allowsEditing: true,
+  //     aspect: [4, 3],
+  //     quality: 1,
+  //   });
 
-    if (!result.cancelled) {
-      setSelectedImg(result.uri);
-    }
-  };
-  // console.log(selectedImg);
-  const uploadImage = async () => {
-    const uriParts = selectedImg.split(".");
-    const fileType = uriParts[uriParts.length - 1];
-    console.log(fileType);
-    const file = new File(
-      [await (await fetch(selectedImg)).blob()],
-      `image.jpg`,
-      {
-        type: `image/${fileType}`,
+  //   if (!result.cancelled) {
+  //     setSelectedImg(result.uri);
+  //   }
+  // };
+  // // console.log(selectedImg);
+  // const uploadImage = async () => {
+  //   const uriParts = selectedImg.split(".");
+  //   const fileType = uriParts[uriParts.length - 1];
+  //   console.log(fileType);
+  //   const file = new File(
+  //     [await (await fetch(selectedImg)).blob()],
+  //     `image.jpg`,
+  //     {
+  //       type: `image/${fileType}`,
+  //     }
+  //   );
+  //   if (file) {
+  //     const promise = storage.createFile("listings", "abcdef", file);
+
+  //     promise.then(
+  //       function (res) {
+  //         console.log(res);
+  //       },
+  //       function (error) {
+  //         console.log("thait myakuri", error);
+  //       }
+  //     );
+  //   }
+  // };
+
+  const createListing = () => {
+    setLoading(true);
+    const promise = databases.createDocument(
+      "madhyayuga",
+      "listings",
+      ID.unique(),
+      { ...newListing, userId: user.$id }
+    );
+    promise.then(
+      (res) => {
+        console.log(res);
+        dispatch(fetchAllListings({ limit: 5 }));
+        dispatch(userListings({ userId: user.$id }));
+        setNewListing({ ...defaultInputs });
+        setLoading(false);
+      },
+      (error) => {
+        console.log("listing upload error", error);
+        setLoading(false);
       }
     );
-    if (file) {
-      const promise = storage.createFile("listings", "abcdef", file);
-
-      promise.then(
-        function (res) {
-          console.log(res);
-        },
-        function (error) {
-          console.log("thait myakuri", error);
-        }
-      );
-    }
   };
+
   return (
     <View
       style={{
@@ -79,7 +120,7 @@ const AddItemScreen = () => {
       }}
     >
       <ScreenHeaderComponent title="List Your Item" />
-      <Avatar
+      {/* <Avatar
         source={selectedImg ? { uri: selectedImg } : selectImgDum}
         containerStyle={{
           alignSelf: "center",
@@ -98,7 +139,7 @@ const AddItemScreen = () => {
           size={30}
           onPress={pickImage}
         />
-      </Avatar>
+      </Avatar> */}
       <ScrollView style={{ width: "100%" }}>
         <View>
           <Text
@@ -111,8 +152,10 @@ const AddItemScreen = () => {
             Item's Names
           </Text>
           <Input
-            // value={email}
-            // onChangeText={(email) => setEmail(email)}
+            value={newListing.name}
+            onChangeText={(name) =>
+              setNewListing({ ...newListing, name: name })
+            }
             inputContainerStyle={{
               borderWidth: 2,
               borderRadius: 5,
@@ -140,8 +183,13 @@ const AddItemScreen = () => {
             Description
           </Text>
           <Input
-            // value={email}
-            // onChangeText={(email) => setEmail(email)}
+            multiline
+            numberOfLines={4}
+            maxLength={100}
+            value={newListing.description}
+            onChangeText={(description) =>
+              setNewListing({ ...newListing, description: description })
+            }
             inputContainerStyle={{
               borderWidth: 2,
               borderRadius: 5,
@@ -169,8 +217,10 @@ const AddItemScreen = () => {
             For
           </Text>
           <Input
-            // value={email}
-            // onChangeText={(email) => setEmail(email)}
+            value={newListing.for}
+            onChangeText={(forItem) =>
+              setNewListing({ ...newListing, for: forItem })
+            }
             inputContainerStyle={{
               borderWidth: 2,
               borderRadius: 5,
@@ -187,11 +237,81 @@ const AddItemScreen = () => {
             inputStyle={{ fontFamily: `${defaultFont}_400Regular` }}
           />
         </View>
+        <View>
+          <Text
+            style={{
+              fontFamily: `${defaultFont}_400Regular`,
+              fontSize: 18,
+              marginBottom: 4,
+            }}
+          >
+            Condition
+          </Text>
+          <Input
+            value={newListing.condition}
+            onChangeText={(condition) =>
+              setNewListing({ ...newListing, condition: condition })
+            }
+            inputContainerStyle={{
+              borderWidth: 2,
+              borderRadius: 5,
+              borderBottomWidth: 2,
+              paddingHorizontal: 5,
+              borderColor: theme.colors.grey4,
+              backgroundColor: theme.colors.grey4,
+            }}
+            // leftIcon={<Icon name="mail" type="feather" />}
+            // errorMessage="Fuck@nigga.com"
+            placeholder="new or old"
+            // keyboardType="email-address"
+            containerStyle={{ paddingHorizontal: 0 }}
+            inputStyle={{ fontFamily: `${defaultFont}_400Regular` }}
+          />
+        </View>
+        <View>
+          <Text
+            style={{
+              fontFamily: `${defaultFont}_400Regular`,
+              fontSize: 18,
+              marginBottom: 4,
+            }}
+          >
+            Location
+          </Text>
+          <Input
+            value={newListing.location}
+            onChangeText={(location) =>
+              setNewListing({ ...newListing, location: location })
+            }
+            inputContainerStyle={{
+              borderWidth: 2,
+              borderRadius: 5,
+              borderBottomWidth: 2,
+              paddingHorizontal: 5,
+              borderColor: theme.colors.grey4,
+              backgroundColor: theme.colors.grey4,
+            }}
+            // leftIcon={<Icon name="mail" type="feather" />}
+            // errorMessage="Fuck@nigga.com"
+            placeholder="location"
+            // keyboardType="email-address"
+            containerStyle={{ paddingHorizontal: 0 }}
+            inputStyle={{ fontFamily: `${defaultFont}_400Regular` }}
+          />
+        </View>
         <Button
+          loading={loading}
+          disabled={Boolean(
+            newListing.name === "" ||
+              newListing.for === "" ||
+              newListing.description === "" ||
+              newListing.condition === "" ||
+              newListing.location === ""
+          )}
           title="Create Listing"
           color="success"
           buttonStyle={{ paddingVertical: 12, borderRadius: 5 }}
-          onPress={() => uploadImage(selectedImg)}
+          onPress={createListing}
         />
       </ScrollView>
     </View>

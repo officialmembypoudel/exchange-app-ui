@@ -17,8 +17,8 @@ import { defaultFont } from "../fontConfig/defaultFont";
 import { textTrimmer } from "../helpers/functions";
 import { useNavigation } from "@react-navigation/native";
 
-export default function ItemComponent({ type, item }) {
-  const style = useTheme();
+export default function ItemComponent({ type, item, zindex }) {
+  const { theme } = useTheme();
   const { mode } = useThemeMode();
   const navigation = useNavigation();
 
@@ -33,9 +33,10 @@ export default function ItemComponent({ type, item }) {
         // width: "100%",
         marginLeft: type === "column" ? "1%" : 0,
         marginRight: type === "row" ? 10 : 0,
-        marginBottom: type === "column" ? 10 : 10,
+        marginBottom: type === "column" ? 5 : 5,
         padding: 1,
         height: type === "column" ? "auto" : "auto",
+        zIndex: zindex,
       }}
     >
       <Card
@@ -44,9 +45,7 @@ export default function ItemComponent({ type, item }) {
           marginBottom: 0,
           padding: 10,
           backgroundColor:
-            mode === "dark"
-              ? style.theme.colors.grey4
-              : style.theme.colors.background,
+            mode === "dark" ? theme.colors.grey4 : theme.colors.background,
           borderWidth: 0,
           borderRadius: 10,
           width: type === "row" ? 190 : "100%",
@@ -61,7 +60,7 @@ export default function ItemComponent({ type, item }) {
           alignItems: type === "column" ? "center" : "flex-start",
         }}
       >
-        <Card.Image
+        {/* <Card.Image
           style={{
             resizeMode: "cover",
             width: 172,
@@ -70,6 +69,14 @@ export default function ItemComponent({ type, item }) {
           }}
           source={{
             uri: item.imageSrc,
+          }}
+        /> */}
+        <Avatar
+          title={item?.name}
+          containerStyle={{
+            width: 172,
+            height: 138,
+            backgroundColor: theme.colors.grey3,
           }}
         />
         <View
@@ -85,12 +92,12 @@ export default function ItemComponent({ type, item }) {
             <Chip
               title="Hot"
               type="solid"
-              color={style.theme.colors.error}
+              color={theme.colors.error}
               icon={
                 <Icon
                   name="fire"
                   type="material-community"
-                  color={style.theme.colors.white}
+                  color={theme.colors.white}
                 />
               }
               onPress={pressed}
@@ -103,7 +110,7 @@ export default function ItemComponent({ type, item }) {
           {type === "row" && <Card.Divider style={{ marginBottom: 2 }} />}
           <Text
             style={{
-              color: style.theme.colors.grey0,
+              color: theme.colors.grey0,
               marginTop: 0,
               textAlign: "left",
               fontSize: 16,
@@ -111,11 +118,11 @@ export default function ItemComponent({ type, item }) {
               fontWeight: "500",
             }}
           >
-            {textTrimmer(item.name, 15)}
+            {item?.name}
           </Text>
           <Text
             style={{
-              color: style.theme.colors.grey0,
+              color: theme.colors.grey0,
               marginTop: 0,
               textAlign: "left",
               fontSize: 13,
@@ -123,11 +130,11 @@ export default function ItemComponent({ type, item }) {
               fontFamily: `${defaultFont}_300Light`,
             }}
           >
-            {item.address}
+            {item?.location}
           </Text>
           <Text
             style={{
-              color: style.theme.colors.grey0,
+              color: theme.colors.grey0,
               marginTop: 0,
               textAlign: "left",
               fontSize: 15,
@@ -139,7 +146,7 @@ export default function ItemComponent({ type, item }) {
           </Text>
           <Text
             style={{
-              color: style.theme.colors.grey0,
+              color: theme.colors.grey0,
               marginTop: 0,
               textAlign: "left",
               fontSize: 16,
@@ -147,7 +154,7 @@ export default function ItemComponent({ type, item }) {
               fontWeight: "500",
             }}
           >
-            For: {textTrimmer(item.with, 15)}
+            For: {item?.for}
           </Text>
         </View>
       </Card>

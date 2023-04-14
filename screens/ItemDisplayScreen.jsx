@@ -5,7 +5,7 @@ import {
   Image,
   ScrollView,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { containerStyles } from "../helpers/objects";
 import {
   makeStyles,
@@ -30,8 +30,12 @@ import { dummyText } from "../dummyData/exchangeItems";
 import { textTrimmer } from "../helpers/functions";
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 import { SearchBarAndroid } from "@rneui/base/dist/SearchBar/SearchBar-android";
+import { databases } from "../configs/appwrite";
+import { useDispatch } from "react-redux";
+import { updateViews } from "../store/listings";
+import NewListings from "./NewListings";
 
-const ItemDetailsTab = ({ setScrollEnabled }) => {
+const ItemDetailsTab = ({ setScrollEnabled, item }) => {
   const style = useTheme();
   const [index, setIndex] = useState(0);
   const theme = useTheme();
@@ -141,7 +145,7 @@ const ItemDetailsTab = ({ setScrollEnabled }) => {
                     textAlign: "justify",
                   }}
                 >
-                  {textTrimmer(dummyText, 1800)}
+                  {item?.description}
                 </Text>
               </View>
             </ScrollView>
@@ -302,6 +306,7 @@ const StyledCard = ({ children }) => {
 };
 
 const ItemDisplayScreen = ({ route }) => {
+  const dispatch = useDispatch();
   const style = useTheme();
   const navigation = useNavigation();
   const [isDark, setIsDark] = useState(false);
@@ -309,9 +314,33 @@ const ItemDisplayScreen = ({ route }) => {
   const { item } = route.params;
   const screenWidth = Dimensions.get("window").width;
   const [scrollEnabled, setScrollEnabled] = useState(true);
+  const [newItem, setNewItem] = useState({ ...item });
 
-  console.log(scrollEnabled);
+  useEffect(() => {
+    if (item.from === "home") {
+      dispatch(updateViews({ ...item, limit: 5 }));
+    } else if (item.from === "newListing") {
+      dispatch(updateViews({ ...item, limit: 100 }));
+    }
+  }, [item.$updatedAt, dispatch]);
+  useEffect(() => {
+    const promise = databases.getDocument(
+      "madhyayuga",
+      "userInfo",
+      item.userId
+    );
 
+    promise.then((res) => {
+      setNewItem({
+        ...newItem,
+        username: res.name,
+        email: res.email,
+        phone: res.phone,
+      });
+    });
+  }, [item.$id]);
+
+  console.log("item", item);
   return (
     <View
       style={{
@@ -344,7 +373,7 @@ const ItemDisplayScreen = ({ route }) => {
             elevation: 1,
           }}
         >
-          <Card.Image
+          {/* <Card.Image
             source={{ uri: item.imageSrc }}
             style={{
               width: "100%",
@@ -352,6 +381,14 @@ const ItemDisplayScreen = ({ route }) => {
               alignSelf: "center",
               marginTop: 0,
               resizeMode: "cover",
+            }}
+          /> */}
+          <Avatar
+            title={`${item?.name} image`}
+            containerStyle={{
+              backgroundColor: style.theme.colors.grey3,
+              width: "100%",
+              height: 80,
             }}
           />
         </Card>
@@ -375,7 +412,7 @@ const ItemDisplayScreen = ({ route }) => {
             <View style={{ flexDirection: "row", alignItems: "center" }}>
               <Icon name="location-outline" type="ionicon" size={15} />
               <Text style={{ fontFamily: `${defaultFont}_300Light` }}>
-                {item.address}
+                {item?.location}
               </Text>
             </View>
             <NormalDataTextComponent title="Name" text={item.name} />
@@ -398,7 +435,7 @@ const ItemDisplayScreen = ({ route }) => {
                 selectable
                 selectionColor={style.theme.colors.error}
               >
-                Exchange With: {item.with}
+                Exchange With: {item?.for}
               </Text>
               <ThemedButton
                 icon={<Icon name="logo-google" type="ionicon" size={16} />}
@@ -414,23 +451,16 @@ const ItemDisplayScreen = ({ route }) => {
         </Card>
         <StyledCard>
           <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <Avatar
-              rounded
-              size={"large"}
-              source={profileImg}
-              containerStyle={{
-                backgroundColor: style.theme.colors.grey0,
-              }}
-            />
+            {/* <Avatar rounded size={"large"} title="img" /> */}
             <View style={{ marginLeft: 10 }}>
-              <NormalDataTextComponent text={item.postedBy} />
+              <NormalDataTextComponent text={newItem.username} />
               <NormalDataTextComponent
-                text={"9842751882"}
+                text={newItem.phone}
                 fontFamily={`${defaultFont}_500Medium`}
                 fontSize={14}
               />
               <NormalDataTextComponent
-                text={"example@gmail.com"}
+                text={newItem.email}
                 fontFamily={`${defaultFont}_500Medium`}
                 fontSize={14}
               />
@@ -438,8 +468,23 @@ const ItemDisplayScreen = ({ route }) => {
           </View>
         </StyledCard>
         <StyledCard>
-          <ItemDetailsTab setScrollEnabled={setScrollEnabled} />
+          {/* <ItemDetailsTab setScrollEnabled={setScrollEnabled} item={item} /> */}
           {/* </View> */}
+          <NormalDataTextComponent
+            text={"Description"}
+            fontFamily={`${defaultFont}_500Medium`}
+            fontSize={14}
+          />
+          <Text
+            // selectable
+            selectionColor={style.theme.colors.success}
+            style={{
+              fontFamily: `${defaultFont}_400Regular`,
+              textAlign: "justify",
+            }}
+          >
+            {item?.description}
+          </Text>
         </StyledCard>
       </ScrollView>
       <View

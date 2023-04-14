@@ -36,6 +36,7 @@ const ProfileItemsCards = ({
         marginBottom: 20,
       }}
       activeOpacity={0.95}
+      onPress={onPress ? onPress : () => {}}
     >
       <Card
         containerStyle={{
